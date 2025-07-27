@@ -1,3 +1,6 @@
+// src/NoteForm.jsx
+import { useState } from 'react';
+
 const NoteForm = ({ onAddNote, onCancel }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -6,22 +9,22 @@ const NoteForm = ({ onAddNote, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
-    
+
     if (!title.trim()) newErrors.title = 'Please enter a title';
     if (!content.trim()) newErrors.content = 'Please enter some content';
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     const newNote = {
       id: Date.now(),
       title: title.trim(),
       content: content.trim(),
       createdAt: new Date().toISOString()
     };
-    
+
     onAddNote(newNote);
     setTitle('');
     setContent('');

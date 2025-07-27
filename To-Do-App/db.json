@@ -1,0 +1,10 @@
+{
+  "todos": [
+    { "id": 1, "text": "Buy groceries", "completed": false },
+    { "id": 2, "text": "Study React", "completed": true }
+  ],
+  "notes": [
+    { "id": 1, "content": "Finish project setup" },
+    { "id": 2, "content": "Prepare for review" }
+  ]
+}

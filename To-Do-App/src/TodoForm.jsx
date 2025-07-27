@@ -1,3 +1,6 @@
+// src/TodoForm.jsx
+import { useState } from 'react';
+
 const TodoForm = ({ onAddTodo, onCancel }) => {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
@@ -8,14 +11,14 @@ const TodoForm = ({ onAddTodo, onCancel }) => {
       setError('Please enter a task');
       return;
     }
-    
+
     const newTodo = {
       id: Date.now(),
       text: text.trim(),
       completed: false,
       createdAt: new Date().toISOString()
     };
-    
+
     onAddTodo(newTodo);
     setText('');
     setError('');

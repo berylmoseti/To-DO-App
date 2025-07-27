@@ -1,3 +1,9 @@
+// src/AddPage.jsx
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TodoForm from './TodoForm';
+import NoteForm from './NoteForm';
+
 const AddPage = ({ onAddTodo, onAddNote }) => {
   const [activeTab, setActiveTab] = useState('todo');
   const navigate = useNavigate();
@@ -7,12 +13,21 @@ const AddPage = ({ onAddTodo, onAddNote }) => {
   };
 
   const handleAddTodo = (todo) => {
-    onAddTodo(todo);
+    const newTodo = {
+      ...todo,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    onAddTodo(newTodo);
     navigate('/');
   };
 
   const handleAddNote = (note) => {
-    onAddNote(note);
+    const newNote = {
+      ...note,
+      createdAt: new Date().toISOString()
+    };
+    onAddNote(newNote);
     navigate('/notes');
   };
 

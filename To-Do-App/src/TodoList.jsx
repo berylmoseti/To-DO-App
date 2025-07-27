@@ -1,3 +1,6 @@
+// src/TodoList.jsx
+import { Link } from 'react-router-dom';
+
 const TodoList = ({ todos, onToggleTodo, onDeleteTodo }) => {
   if (todos.length === 0) {
     return (
@@ -26,7 +29,7 @@ const TodoList = ({ todos, onToggleTodo, onDeleteTodo }) => {
             </div>
             <div className="todo-actions">
               <small className="todo-date">
-                {new Date(todo.createdAt).toLocaleDateString()}
+                {todo.createdAt ? new Date(todo.createdAt).toLocaleDateString() : '—'}
               </small>
               <button 
                 onClick={() => onDeleteTodo(todo.id)}

@@ -1,3 +1,6 @@
+// src/NoteList.jsx
+import { Link } from 'react-router-dom';
+
 const NoteList = ({ notes, onDeleteNote }) => {
   if (notes.length === 0) {
     return (
@@ -19,7 +22,7 @@ const NoteList = ({ notes, onDeleteNote }) => {
               <h3 className="note-title">{note.title}</h3>
               <div className="note-actions">
                 <small className="note-date">
-                  {new Date(note.createdAt).toLocaleDateString()}
+                  {note.createdAt ? new Date(note.createdAt).toLocaleDateString() : '—'}
                 </small>
                 <button 
                   onClick={() => onDeleteNote(note.id)}

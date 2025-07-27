@@ -5,65 +5,110 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
 import TodoList from './TodoList';
 import NoteList from './NoteList';
-import AddPage from './AddPage.jsx';
-/**
-import Navbar from './Navbar';
-import TodoList from './TodoList';
+import AddPage from './AddPage';
 
-**/
-
-// Mock data (replace with actual API calls or json-server in real app)
-const mockApi = {
-  todos: [
-    { id: 1, text: 'Buy groceries', completed: false },
-    { id: 2, text: 'Study React', completed: true }
-  ],
-  notes: [
-    { id: 1, content: 'Finish project setup' },
-    { id: 2, content: 'Prepare for review' }
-  ]
-};
+const API_URL = 'http://localhost:3001';
 
 const App = () => {
   const [todos, setTodos] = useState([]);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch data from json-server
   useEffect(() => {
-    // Simulate GET requests
-    setTimeout(() => {
-      setTodos(mockApi.todos);
-      setNotes(mockApi.notes);
-      setLoading(false);
-    }, 500);
+    const fetchData = async () => {
+      try {
+        const [todoRes, noteRes] = await Promise.all([
+          fetch(`${API_URL}/todos`),
+          fetch(`${API_URL}/notes`)
+        ]);
+
+        const [todosData, notesData] = await Promise.all([
+          todoRes.json(),
+          noteRes.json()
+        ]);
+
+        setTodos(todosData);
+        setNotes(notesData);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const addTodo = (todo) => {
-    setTodos(prev => [...prev, todo]);
-    mockApi.todos.push(todo);
+  // Todo Handlers
+  const addTodo = async (todo) => {
+    try {
+      const res = await fetch(`${API_URL}/todos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todo),
+      });
+      const newTodo = await res.json();
+      setTodos((prev) => [...prev, newTodo]);
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
   };
 
-  const toggleTodo = (id) => {
-    setTodos(prev => prev.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+  const toggleTodo = async (id) => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+
+    const updated = { ...todo, completed: !todo.completed };
+
+    try {
+      await fetch(`${API_URL}/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      setTodos((prev) =>
+        prev.map((t) => (t.id === id ? updated : t))
+      );
+    } catch (error) {
+      console.error('Error toggling todo:', error);
+    }
   };
 
-  const deleteTodo = (id) => {
-    setTodos(prev => prev.filter(todo => todo.id !== id));
-    mockApi.todos = mockApi.todos.filter(todo => todo.id !== id);
+  const deleteTodo = async (id) => {
+    try {
+      await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' });
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
   };
 
-  const addNote = (note) => {
-    setNotes(prev => [...prev, note]);
-    mockApi.notes.push(note);
+  // Note Handlers
+  const addNote = async (note) => {
+    try {
+      const res = await fetch(`${API_URL}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(note),
+      });
+      const newNote = await res.json();
+      setNotes((prev) => [...prev, newNote]);
+    } catch (error) {
+      console.error('Error adding note:', error);
+    }
   };
 
-  const deleteNote = (id) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
-    mockApi.notes = mockApi.notes.filter(note => note.id !== id);
+  const deleteNote = async (id) => {
+    try {
+      await fetch(`${API_URL}/notes/${id}`, { method: 'DELETE' });
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
   };
 
+  // Loading UI
   if (loading) {
     return (
       <div className="loading">
@@ -79,33 +124,33 @@ const App = () => {
         <Navbar />
         <main className="main-content">
           <Routes>
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
-                <TodoList 
-                  todos={todos} 
+                <TodoList
+                  todos={todos}
                   onToggleTodo={toggleTodo}
                   onDeleteTodo={deleteTodo}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/notes" 
+            <Route
+              path="/notes"
               element={
-                <NoteList 
+                <NoteList
                   notes={notes}
                   onDeleteNote={deleteNote}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/add" 
+            <Route
+              path="/add"
               element={
-                <AddPage 
+                <AddPage
                   onAddTodo={addTodo}
                   onAddNote={addNote}
                 />
-              } 
+              }
             />
           </Routes>
         </main>
